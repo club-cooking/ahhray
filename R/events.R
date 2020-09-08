@@ -1,76 +1,92 @@
 
 #Seemed like the best way for this was to use the url patter, we can get country and regions
 #from this page.
+get_event_regions <- function() {
 
-country_region_events <- polite_read_html("https://www.residentadvisor.net/events?show=all") %>%
-  rvest::html_nodes("div.mr8 a") %>%
-  rvest::html_attr("href")
+  urls <- polite_read_html("https://www.residentadvisor.net/events?show=all") %>%
+    rvest::html_nodes("div.mr8 a") %>%
+    rvest::html_attr("href")
 
+  stringr::str_extract(urls, "([^/]+$)")
+}
+
+# get events for a region
 #Not sure how to make this simple yet but hey ho, for example lets look at london events
-country_region_events_to_find <- country_region_events %>%
-  stringr::str_subset("/london")
-
 #If we do it monthly, it only requires 12 calls a year?
-monthly_events_by_country_region <-
-  paste0("https://www.residentadvisor.net", country_region_events_to_find, "/month")
+get_event_urls <- function(region, year, month) {
 
-event_listing_urls <- polite_read_html(paste0(monthly_events_by_country_region, "/2015-09-01")) %>%
-  rvest::html_nodes("#event-listing li a ") %>%
-  rvest::html_attr("href") %>%
-  stringr::str_subset("/events/\\d+$")
+  url <- file.path(
+    "https://www.residentadvisor.net", "events", region, "month",
+    as.Date(paste(year, month, "01", sep = "-"))
+    )
 
+  events <- polite_read_html(url) %>%
+    rvest::html_nodes("#event-listing li a ") %>%
+    rvest::html_attr("href") %>%
+    stringr::str_subset("/events/\\d+$")
 
-event_listing_urls <- paste0("https://www.residentadvisor.net", event_listing_urls)
-
-
-event_listing_url_tibble <-
-  tibble::as_tibble(event_listing_urls)
-
+  stringr::str_extract(events, "([^/]+$)")
+}
 
 #' get_event_lineup
+#'
 #' Function to get lineup details
-#' @param event_url
+#' @param event_id
 #'
 #' @return
 #' @export
 #'
 #' @examples
-get_event_lineup <- function(event_url){
-  event_line_up <- polite_read_html(event_url) %>%
-    rvest::html_nodes("p.lineup a") %>%
+#' get_event_lineup(1422257)
+get_event_lineup <- function(event_id){
+
+  url <- file.path(
+    "https://www.residentadvisor.net", "events", event_id
+    )
+
+  lineup <- polite_read_html(url) %>%
+    rvest::html_nodes("p.lineup") %>%
     rvest::html_text()
+
+  unlist(stringr::str_split(lineup, pattern = "\n"))
 }
 
 
 #' get_event_name
 #' Function to get event name
-#' @param event_url
+#' @param event_id
 #'
 #' @return
 #' @export
 #'
 #' @examples
-get_event_name <- function(event_url){
+get_event_name <- function(event_id){
 
-  event_name <- polite_read_html(event_url) %>%
-    rvest::html_nodes("h1") %>%
-    rvest::html_text() %>%
-    head(1)
+  url <- file.path(
+    "https://www.residentadvisor.net", "events", event_id
+  )
 
-  event_name
+  polite_read_html(url) %>%
+    rvest::html_nodes("#sectionHead > h1") %>%
+    rvest::html_text()
 
 }
 
 #' get_event_date_and_venue
 #' Function to get date and venue of a event
-#' @param event_url
+#' @param event_id
 #'
 #' @return
 #' @export
 #'
 #' @examples
-get_event_date_and_venue <- function(event_url){
-  polite_read_html(event_url) %>%
+get_event_date_and_venue <- function(event_id){
+
+  url <- file.path(
+    "https://www.residentadvisor.net", "events", event_id
+  )
+
+  polite_read_html(url) %>%
     rvest::html_nodes("a.cat-rev") %>%
     rvest::html_attr("href")
 }
@@ -79,19 +95,22 @@ get_event_date_and_venue <- function(event_url){
 
 #' get_promoter_url
 #' Get promoter url
-#' @param event_page_url
+#' @param event_id
 #'
 #' @return
 #' @export
 #'
 #' @examples
-get_promoter_url <- function(event_page_url){
+get_promoter_url <- function(event_id){
 
-  promoter_url <- polite_read_html(event_page_url) %>%
+  url <- file.path(
+    "https://www.residentadvisor.net", "events", event_id
+  )
+
+  polite_read_html(url) %>%
     rvest::html_nodes("div a") %>%
     rvest::html_attr("href") %>%
     stringr::str_subset("/promoter.aspx?")
-
 
 }
 
