@@ -2,4 +2,5 @@
 
 export("%>%")
 export(ra_get_clubs)
+export(ra_get_event_info)
 importFrom(magrittr,"%>%")
