@@ -28,90 +28,39 @@ get_event_urls <- function(region, year, month) {
   stringr::str_extract(events, "([^/]+$)")
 }
 
-#' get_event_lineup
-#'
-#' Function to get lineup details
-#' @param event_id
-#'
-#' @return
-#' @export
-#'
-#' @examples
-#' get_event_lineup(1422257)
-get_event_lineup <- function(event_id){
+# get lineup details
+get_event_lineup <- function(page){
 
-  url <- file.path(
-    "https://www.residentadvisor.net", "events", event_id
-    )
-
-  lineup <- polite_read_html(url) %>%
+  lineup <- page %>%
     rvest::html_nodes("p.lineup") %>%
     rvest::html_text()
 
   unlist(stringr::str_split(lineup, pattern = "\n"))
 }
 
+# get event name
+get_event_name <- function(page){
 
-#' get_event_name
-#' Function to get event name
-#' @param event_id
-#'
-#' @return
-#' @export
-#'
-#' @examples
-get_event_name <- function(event_id){
-
-  url <- file.path(
-    "https://www.residentadvisor.net", "events", event_id
-  )
-
-  polite_read_html(url) %>%
+  page %>%
     rvest::html_nodes("#sectionHead > h1") %>%
     rvest::html_text()
-
 }
 
-#' get_event_date_and_venue
-#' Function to get date and venue of a event
-#' @param event_id
-#'
-#' @return
-#' @export
-#'
-#' @examples
-get_event_date_and_venue <- function(event_id){
+# get date and venue of a event
+get_event_date_and_venue <- function(page){
 
-  url <- file.path(
-    "https://www.residentadvisor.net", "events", event_id
-  )
-
-  polite_read_html(url) %>%
+  page %>%
     rvest::html_nodes("a.cat-rev") %>%
     rvest::html_attr("href")
 }
 
+# get promoter url
+get_promoter_url <- function(page){
 
-
-#' get_promoter_url
-#' Get promoter url
-#' @param event_id
-#'
-#' @return
-#' @export
-#'
-#' @examples
-get_promoter_url <- function(event_id){
-
-  url <- file.path(
-    "https://www.residentadvisor.net", "events", event_id
-  )
-
-  polite_read_html(url) %>%
+  page %>%
     rvest::html_nodes("div a") %>%
     rvest::html_attr("href") %>%
     stringr::str_subset("/promoter.aspx?")
-
 }
 
 #' get_promoter_or_club_name
@@ -140,9 +89,9 @@ get_promoter_or_club_name <- function(promoter_club_url){
 #' @export
 #'
 #' get_promoter_or_club_name
-find_event_promoter <- function(event_page_url){
+find_event_promoter <- function(page){
 
-  promoter_url <- get_promoter_url(event_page_url)
+  promoter_url <- get_promoter_url(page)
 
   promoter_name <- get_promoter_name(promoter_url)
 
@@ -158,18 +107,22 @@ find_event_promoter <- function(event_page_url){
 #' @return
 #' @export
 #'
-#' get_event_info(event_listing_urls[1])
-get_event_info <- function(event_page_url){
+#' get_event_info(1422257)
+get_event_info <- function(event_id){
 
+  url <- file.path(
+    "https://www.residentadvisor.net", "events", event_id
+  )
 
-  event_details <- list()
+  event_page <- polite_read_html(url)
 
   date_regex <- "([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))"
 
+  event_details <- list()
 
-  event_details[["event_name"]] <- get_event_name(event_page_url)
+  event_details[["event_name"]] <- get_event_name(event_page)
 
-  event_date_and_venue <- get_event_date_and_venue(event_page_url)
+  event_date_and_venue <- get_event_date_and_venue(event_page)
 
   event_date <- anytime::anydate(stringr::str_extract(event_date_and_venue[1], date_regex))
 
@@ -178,10 +131,10 @@ get_event_info <- function(event_page_url){
   event_details[["event_location"]] <- get_promoter_or_club_name(event_date_and_venue[2])
 
 
-  event_details[["artist"]] <- get_event_lineup(event_page_url)
+  event_details[["artist"]] <- get_event_lineup(event_page)
 
 
-  event_details[["promoter"]] <- find_event_promoter(event_page_url)
+  event_details[["promoter"]] <- find_event_promoter(event_page)
 
 
   event_details
