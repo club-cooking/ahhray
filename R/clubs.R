@@ -11,10 +11,9 @@
 #' ra_get_clubs(ai = 10)
 #' }
 ra_get_clubs <- function(ai) {
-
   clubs <- polite_read_html(
     "https://www.residentadvisor.net/clubs.aspx",
-    query = list(ai=ai)
+    query = list(ai = ai)
   ) %>%
     rvest::html_nodes("#clubs a")
 
@@ -24,8 +23,7 @@ ra_get_clubs <- function(ai) {
   res <- list()
 
   res[["ai"]] <- ai
-  res[["clubs"]] <- lapply(seq_along(clubs), function(x){
-
+  res[["clubs"]] <- lapply(seq_along(clubs), function(x) {
     list(
       club_name = club_names[x],
       club_url = club_urls[x]
@@ -34,7 +32,3 @@ ra_get_clubs <- function(ai) {
 
   res
 }
-
-
-
-
