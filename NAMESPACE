@@ -2,5 +2,7 @@
 
 export("%>%")
 export(ra_get_clubs)
-export(ra_get_event_info)
+export(ra_get_event)
+export(ra_get_region_events)
+export(ra_get_regions)
 importFrom(magrittr,"%>%")

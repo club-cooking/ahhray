@@ -1,0 +1,58 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# ahhray
+
+...
+
+## Installation
+
+You can install the released version of ahhray from [CRAN](https://CRAN.R-project.org) with:
+
+``` r
+install.packages("ahhray")
+```
+
+And the development version from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("club-cooking/ahhray")
+```
+## Use
+
+```{r example}
+library(ahhray)
+```
+
+### Events
+
+Get information about a particular event:
+
+```{r}
+ra_get_event(event_id = 1422257)
+```
+
+Get event regions listed:
+
+```{r}
+ra_get_regions()
+```
+
+Get events that took place in a region, within a particular month:
+
+```{r}
+ra_get_region_events(country = "morocco", year = 2020, month = 9)
+```
