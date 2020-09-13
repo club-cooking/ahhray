@@ -118,6 +118,7 @@ ra_get_event <- function(event_id) {
 #' @param region region name
 #' @param year year of event
 #' @param month month of event
+#' @param frequncy you want to scan, day, week or month
 #'
 #' @return a list
 #' @export
@@ -132,16 +133,16 @@ ra_get_event <- function(event_id) {
 #' )
 
 #' }
-ra_get_region_events <- function(country, year, month, region = NULL) {
+ra_get_region_events <- function(country, year, month, region = NULL, frequency) {
 
   if (is.null(region)) {
     url <- file.path(
-      "https://www.residentadvisor.net", "events", country, "month",
+      "https://www.residentadvisor.net", "events", country, frequency,
       as.Date(paste(year, month, "01", sep = "-"))
     )
   } else {
     url <- file.path(
-      "https://www.residentadvisor.net", "events", country, region, "month",
+      "https://www.residentadvisor.net", "events", country, region, frequency,
       as.Date(paste(year, month, "01", sep = "-"))
     )
   }
@@ -151,7 +152,8 @@ ra_get_region_events <- function(country, year, month, region = NULL) {
     rvest::html_nodes("#event-listing li a ") %>%
     rvest::html_attr("href") %>%
     stringr::str_subset("/events/\\d+$") %>%
-    stringr::str_extract("([^/]+$)")
+    stringr::str_extract("([^/]+$)") %>%
+    unique()
 
   lapply(event_ids, ra_get_event)
 
