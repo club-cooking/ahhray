@@ -32,3 +32,37 @@ ra_get_clubs <- function(ai) {
 
   res
 }
+
+
+#' Get clubs information for a club page url
+#'
+#' @param club_url taken form previous function or pasted in
+#'
+#' @return a list
+#' @export
+#'
+#' @examples
+#' #' \dontrun{
+#' ra_get_club_info("https://www.residentadvisor.net/club.aspx?id=106730")
+#'
+ra_get_club_info <- function(club_url){
+
+  club_info <- list()
+
+  club_meta <- polite_read_html(club_url) %>%
+    rvest::html_nodes("#detail li") %>%
+    rvest::html_text()
+
+  club_info_metrics <- sapply(stringr::str_split(club_meta,"/"), `[`, 1) %>%
+    stringr::str_trim()
+
+  club_info_metrics_results <- sapply(stringr::str_split(club_meta,"/"), `[`, 2) %>%
+    stringr::str_trim()
+
+  club_info[club_info_metrics] <- as.list(club_info_metrics_results)
+
+  club_info
+
+}
+
+
