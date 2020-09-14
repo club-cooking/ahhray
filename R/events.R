@@ -114,11 +114,10 @@ ra_get_event <- function(event_id) {
 
 #' Get event information for a region
 #'
-#' @param country country name
-#' @param region region name
-#' @param year year of event
-#' @param month month of event
-#' @param frequncy you want to scan, day, week or month
+#' @param country name of country
+#' @param start_date date of first event(s) (in ISO 8601 format e.g. "2020-10-01")
+#' @param date_range date range of events to retrieve (defaults to "month")
+#' @param region region name (optional; NULL by default)
 #'
 #' @return a list
 #' @export
@@ -126,27 +125,30 @@ ra_get_event <- function(event_id) {
 #' @examples
 #' \dontrun{
 #' ra_get_region_events(
-#' country = "morocco", year = 2020, month = 1
+#' country = "morocco", start_date = "2020-01-01"
 #' )
+#'
 #' ra_get_region_events(
-#' country = "uk", region = "manchester", year = 2020, month = 9
+#' country = "uk", region = "manchester", start_date = "2020-09-01"
 #' )
-
 #' }
-ra_get_region_events <- function(country, year, month, region = NULL, frequency) {
+ra_get_region_events <- function(country, start_date,
+                                 date_range = c("month", "week", "day"),
+                                 region = NULL) {
+
+  date_range <- match.arg(date_range)
 
   if (is.null(region)) {
     url <- file.path(
-      "https://www.residentadvisor.net", "events", country, frequency,
-      as.Date(paste(year, month, "01", sep = "-"))
+      "https://www.residentadvisor.net", "events", country, date_range,
+      start_date
     )
   } else {
     url <- file.path(
-      "https://www.residentadvisor.net", "events", country, region, frequency,
-      as.Date(paste(year, month, "01", sep = "-"))
+      "https://www.residentadvisor.net", "events", country, region, date_range,
+      start_date
     )
   }
-
 
   event_ids <- polite_read_html(url) %>%
     rvest::html_nodes("#event-listing li a ") %>%
@@ -156,5 +158,4 @@ ra_get_region_events <- function(country, year, month, region = NULL, frequency)
     unique()
 
   lapply(event_ids, ra_get_event)
-
 }

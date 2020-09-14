@@ -42,9 +42,9 @@ ra_get_clubs <- function(ai) {
 #' @export
 #'
 #' @examples
-#' #' \dontrun{
+#' \dontrun{
 #' ra_get_club_info("https://www.residentadvisor.net/club.aspx?id=106730")
-#'
+#' }
 ra_get_club_info <- function(club_url){
 
   club_info <- list()
