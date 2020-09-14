@@ -8,9 +8,9 @@
 #'
 #' @examples
 #' \dontrun{
-#' ra_get_clubs(ai = 10)
+#' ra_get_region_clubs(ai = 10)
 #' }
-ra_get_clubs <- function(ai) {
+ra_get_region_clubs <- function(ai) {
   clubs <- polite_read_html(
     "https://www.residentadvisor.net/clubs.aspx",
     query = list(ai = ai)
@@ -18,7 +18,9 @@ ra_get_clubs <- function(ai) {
     rvest::html_nodes("#clubs a")
 
   club_names <- trimws(rvest::html_text(clubs))
-  club_urls <- rvest::html_attr(clubs, "href")
+  club_ids <- as.numeric(
+    stringr::str_extract(rvest::html_attr(clubs, "href"), "([^=]+$)")
+    )
 
   res <- list()
 
@@ -26,7 +28,7 @@ ra_get_clubs <- function(ai) {
   res[["clubs"]] <- lapply(seq_along(clubs), function(x) {
     list(
       club_name = club_names[x],
-      club_url = club_urls[x]
+      club_id = club_ids[x]
     )
   })
 
@@ -34,35 +36,41 @@ ra_get_clubs <- function(ai) {
 }
 
 
-#' Get clubs information for a club page url
+#' Get information about a club
 #'
-#' @param club_url taken form previous function or pasted in
+#' @param club_id numeric; club ID (taken from club URL)
 #'
 #' @return a list
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' ra_get_club_info("https://www.residentadvisor.net/club.aspx?id=106730")
+#' ra_get_club(club_id = 106730)
 #' }
-ra_get_club_info <- function(club_url){
+ra_get_club <- function(club_id){
 
   club_info <- list()
 
-  club_meta <- polite_read_html(club_url) %>%
-    rvest::html_nodes("#detail li") %>%
+  club_page <- polite_read_html(
+    "https://www.residentadvisor.net/club.aspx",
+    query = list(id = club_id)
+    )
+
+  club_info[["club_name"]] <- club_page %>%
+    rvest::html_nodes("#sectionHead span[itemprop='name']") %>%
     rvest::html_text()
 
-  club_info_metrics <- sapply(stringr::str_split(club_meta,"/"), `[`, 1) %>%
-    stringr::str_trim()
+  club_info[["club_id"]] <- as.numeric(club_id)
 
-  club_info_metrics_results <- sapply(stringr::str_split(club_meta,"/"), `[`, 2) %>%
-    stringr::str_trim()
+  club_info[["club_address"]] <- club_page %>%
+    rvest::html_nodes("#detail span[itemprop='address']") %>%
+    rvest::html_text()
 
-  club_info[club_info_metrics] <- as.list(club_info_metrics_results)
+  club_info[["club_capacity"]] <- club_page %>%
+    rvest::html_nodes("#detail ul:nth-child(1) > li:nth-child(2)") %>%
+    rvest::html_text() %>%
+    stringr::str_remove("Capacity /") %>%
+    as.numeric()
 
   club_info
-
 }
-
-

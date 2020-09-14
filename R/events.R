@@ -82,7 +82,7 @@ ra_get_regions <- function() {
   stringr::str_extract(urls, "([^/]+$)")
 }
 
-#' Get event information
+#' Get information about an event
 #'
 #' @param event_id numeric; event ID (taken from event URL)
 #'

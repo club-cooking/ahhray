@@ -2,7 +2,7 @@
 % Please edit documentation in R/events.R
 \name{ra_get_event}
 \alias{ra_get_event}
-\title{Get event information}
+\title{Get information about an event}
 \usage{
 ra_get_event(event_id)
 }
@@ -13,7 +13,7 @@ ra_get_event(event_id)
 a list
 }
 \description{
-Get event information
+Get information about an event
 }
 \examples{
 ra_get_event(event_id = 1422257)
