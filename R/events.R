@@ -75,11 +75,15 @@ get_event_promoter <- function(page) {
 #' ra_get_regions()
 #' }
 ra_get_regions <- function() {
-  urls <- polite_read_html("https://www.residentadvisor.net/events?show=all") %>%
-    rvest::html_nodes("div.mr8 a") %>%
-    rvest::html_attr("href")
 
-  stringr::str_extract(urls, "([^/]+$)")
+  page <- polite_read_html("https://www.residentadvisor.net/events?show=all")
+
+  regions <- rvest::html_nodes(page, ".mr8 li a")
+
+  region_codes <- stringr::str_remove(rvest::html_attr(regions, "href"), "/events/")
+  region_names <- rvest::html_attr(regions, "title")
+
+  purrr::map2(region_names, region_codes, ~ list(region_name = .x, region_code = .y))
 }
 
 #' Get information about an event
@@ -114,10 +118,9 @@ ra_get_event <- function(event_id) {
 
 #' Get event information for a region
 #'
-#' @param country name of country
+#' @param region_code region code (taken from \code{ra_get_regions})
 #' @param start_date date of first event(s) (in ISO 8601 format e.g. "2020-10-01")
 #' @param date_range date range of events to retrieve (defaults to "month")
-#' @param region region name (optional; NULL by default)
 #'
 #' @return a list
 #' @export
@@ -125,30 +128,24 @@ ra_get_event <- function(event_id) {
 #' @examples
 #' \dontrun{
 #' ra_get_region_events(
-#' country = "morocco", start_date = "2020-01-01"
+#' region_code = "morocco", start_date = "2020-01-01"
 #' )
 #'
 #' ra_get_region_events(
-#' country = "uk", region = "manchester", start_date = "2020-09-01"
+#' region_code = "uk/manchester", start_date = "2020-09-01"
 #' )
 #' }
-ra_get_region_events <- function(country, start_date,
-                                 date_range = c("month", "week", "day"),
-                                 region = NULL) {
+ra_get_region_events <- function(region_code, start_date,
+                                 date_range = c("month", "week", "day")
+                                 ) {
 
   date_range <- match.arg(date_range)
 
-  if (is.null(region)) {
     url <- file.path(
-      "https://www.residentadvisor.net", "events", country, date_range,
-      start_date
+      "https://www.residentadvisor.net", "events", region_code,
+      date_range, start_date
     )
-  } else {
-    url <- file.path(
-      "https://www.residentadvisor.net", "events", country, region, date_range,
-      start_date
-    )
-  }
+
 
   event_ids <- polite_read_html(url) %>%
     rvest::html_nodes("#event-listing li a ") %>%

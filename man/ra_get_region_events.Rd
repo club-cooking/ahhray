@@ -5,20 +5,17 @@
 \title{Get event information for a region}
 \usage{
 ra_get_region_events(
-  country,
+  region_code,
   start_date,
-  date_range = c("month", "week", "day"),
-  region = NULL
+  date_range = c("month", "week", "day")
 )
 }
 \arguments{
-\item{country}{name of country}
+\item{region_code}{region code (taken from \code{ra_get_regions})}
 
 \item{start_date}{date of first event(s) (in ISO 8601 format e.g. "2020-10-01")}
 
 \item{date_range}{date range of events to retrieve (defaults to "month")}
-
-\item{region}{region name (optional; NULL by default)}
 }
 \value{
 a list
@@ -29,11 +26,11 @@ Get event information for a region
 \examples{
 \dontrun{
 ra_get_region_events(
-country = "morocco", start_date = "2020-01-01"
+region_code = "morocco", start_date = "2020-01-01"
 )
 
 ra_get_region_events(
-country = "uk", region = "manchester", start_date = "2020-09-01"
+region_code = "uk/manchester", start_date = "2020-09-01"
 )
 }
 }
