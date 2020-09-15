@@ -185,11 +185,6 @@ ra_get_club_events <- function(club_id) {
 
     if (length(event_articles) > 0) {
 
-      event_dates <- event_articles %>%
-        rvest::html_nodes(".date") %>%
-        rvest::html_text() %>%
-        anytime::anydate()
-
       event_ids <- event_articles %>%
         rvest::html_nodes("a") %>%
         rvest::html_attr("href") %>%
@@ -197,7 +192,24 @@ ra_get_club_events <- function(club_id) {
         unique() %>%
         as.numeric()
 
-      events[[as.character(year)]] <- purrr::map2(event_ids, event_dates, ~ list(event_id = .x, event_date = .y))
+      event_names <- event_articles %>%
+        rvest::html_nodes("a h1") %>%
+        rvest::html_text()
+
+      event_dates <- event_articles %>%
+        rvest::html_nodes(".date") %>%
+        rvest::html_text() %>%
+        anytime::anydate()
+
+      # event_attendances <- event_articles %>%
+      #   rvest::html_nodes("p.counter > span") %>%
+      #   rvest::html_text() %>%
+      #   as.numeric()
+
+      events[[as.character(year)]] <- purrr::pmap(
+        list(a = event_ids, b = event_names, c = event_dates),
+        function(a, b, c, d) list(event_id = a, event_name = b, event_date = c)
+        )
 
       year <- year - 1
     } else {

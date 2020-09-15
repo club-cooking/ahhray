@@ -45,14 +45,26 @@ Get information about a particular event:
 ra_get_event(event_id = 1422257)
 ```
 
-Get event regions listed:
+Get listed event regions:
 
 ```{r}
-ra_get_regions()
+regions <- ra_get_regions()
+
+head(regions)
 ```
 
 Get events that took place in a region, within a particular month:
 
 ```{r}
-ra_get_region_events(country = "morocco", year = 2020, month = 9)
+morocco_events <- ra_get_region_events(region_code = "morocco", start_date = "2020-01-01")
+
+head(morocco_events)
+```
+
+Get all events that took place in a specific club:
+
+```{r}
+corsica_events <- ra_get_club_events(club_id = 2587)
+
+head(corsica_events$`2020`)
 ```
