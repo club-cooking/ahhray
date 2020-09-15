@@ -2,6 +2,7 @@
 
 export("%>%")
 export(ra_get_club)
+export(ra_get_club_events)
 export(ra_get_event)
 export(ra_get_region_clubs)
 export(ra_get_region_events)

@@ -146,13 +146,63 @@ ra_get_region_events <- function(region_code, start_date,
       date_range, start_date
     )
 
-
   event_ids <- polite_read_html(url) %>%
     rvest::html_nodes("#event-listing li a ") %>%
     rvest::html_attr("href") %>%
     stringr::str_subset("/events/\\d+$") %>%
     stringr::str_extract("([^/]+$)") %>%
-    unique()
+    unique() %>%
+    as.numeric()
 
   lapply(event_ids, ra_get_event)
+}
+
+#' Get events for a club
+#'
+#' @inheritParams ra_get_club
+#'
+#' @return a list
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' ra_get_club_events(club_id = 2587)
+#' }
+ra_get_club_events <- function(club_id) {
+
+  year <- as.numeric(format(Sys.Date(), "%Y"))
+
+  events <- list()
+
+  while(year > 0) {
+
+    club_page <- polite_read_html(
+      "https://www.residentadvisor.net/club.aspx",
+      query = list(id = club_id, show = "events", yr = year)
+    )
+
+    event_articles <- rvest::html_nodes(club_page, "article")
+
+    if (length(event_articles) > 0) {
+
+      event_dates <- event_articles %>%
+        rvest::html_nodes(".date") %>%
+        rvest::html_text() %>%
+        anytime::anydate()
+
+      event_ids <- event_articles %>%
+        rvest::html_nodes("a") %>%
+        rvest::html_attr("href") %>%
+        stringr::str_extract("([^/]+$)") %>%
+        unique() %>%
+        as.numeric()
+
+      events[[as.character(year)]] <- purrr::map2(event_ids, event_dates, ~ list(event_id = .x, event_date = .y))
+
+      year <- year - 1
+    } else {
+      break
+    }
+  }
+  events
 }
