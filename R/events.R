@@ -209,10 +209,12 @@ ra_get_club_events <- function(club_id) {
       #   rvest::html_text() %>%
       #   as.numeric()
 
-      events[[as.character(year)]] <- purrr::pmap(
+      events[["club_id"]] <- club_id
+
+      events[["events"]] <- c(events[["events"]], purrr::pmap(
         list(a = event_ids, b = event_names, c = event_dates),
         function(a, b, c, d) list(event_id = a, event_name = b, event_date = c)
-        )
+        ))
 
       year <- year - 1
     } else {
