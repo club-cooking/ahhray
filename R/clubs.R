@@ -12,13 +12,17 @@
 #' ra_get_region_clubs(ai = 13, include_closed = TRUE)
 #' }
 ra_get_region_clubs <- function(ai, include_closed = FALSE) {
-  clubs <- polite_read_html(
+  page <- polite_read_html(
     "https://www.residentadvisor.net/clubs.aspx",
     query = list(ai = ai)
-  ) %>%
-    rvest::html_nodes("#clubs a")
+  )
+
+  clubs <- rvest::html_nodes(page, "#clubs a")
 
   club_names <- trimws(rvest::html_text(clubs))
+  club_addresses <- rvest::html_text(
+    rvest::html_nodes(page, "#clubs .mobile-off")
+  )
   club_ids <- as.numeric(
     stringr::str_extract(rvest::html_attr(clubs, "href"), "([^=]+$)")
   )
@@ -26,19 +30,24 @@ ra_get_region_clubs <- function(ai, include_closed = FALSE) {
 
   if (include_closed) {
 
-    closed_clubs <- polite_read_html(
+    closed_page <- polite_read_html(
       "https://www.residentadvisor.net/clubs.aspx",
       query = list(ai = ai, status = "closed")
-    ) %>%
-      rvest::html_nodes("#clubs a")
+    )
+
+    closed_clubs <- rvest::html_nodes(closed_page, "#clubs a")
 
     closed_club_names <- trimws(rvest::html_text(closed_clubs))
+    closed_club_addresses <- rvest::html_text(
+      rvest::html_nodes(closed_page, "#clubs .mobile-off")
+    )
     closed_club_ids <- as.numeric(
       stringr::str_extract(rvest::html_attr(closed_clubs, "href"), "([^=]+$)")
     )
     closed_club_statuses <- rep("closed", length(closed_club_ids))
 
     club_names <- c(club_names, closed_club_names)
+    club_addresses <- c(club_addresses, closed_club_addresses)
     club_ids <- c(club_ids, closed_club_ids)
     club_statuses <- c(club_statuses, closed_club_statuses)
   }
@@ -47,8 +56,8 @@ ra_get_region_clubs <- function(ai, include_closed = FALSE) {
 
   res[["ai"]] <- ai
   res[["clubs"]] <- purrr::pmap(
-    list(a = club_names, b = club_ids, c = club_statuses),
-    function(a, b, c, d) list(club_name = a, club_id = b, club_status = c)
+    list(a = club_names, b = club_addresses, c = club_ids, d = club_statuses),
+    function(a, b, c, d) list(club_name = a, club_address = b, club_id = c, club_status = d)
   )
 
   res
