@@ -1,12 +1,20 @@
 # get lineup details
 get_event_lineup <- function(page) {
-  lineup_element <- rvest::html_nodes(page, "p.lineup.large > a")
+  lineup_element <- rvest::html_nodes(page, "p.lineup.large")
 
-  names <- rvest::html_text(lineup_element)
-  ids <- stringr::str_extract(
-    rvest::html_attr(lineup_element, "href"),
+  artists_with_pages <- rvest::html_node(lineup_element, "a")
+  artists_with_pages_names <- rvest::html_text(artists_with_pages)
+  artists_with_pages_ids <- stringr::str_extract(
+    rvest::html_attr(artists_with_pages, "href"),
     "([^/]+$)"
   )
+
+  all_names <- unlist(stringr::str_split(rvest::html_text(lineup_element), "\n"))
+
+  artists_wo_pages_names <- setdiff(all_names, artists_with_pages_names)
+
+  names <- c(artists_with_pages_names, artists_wo_pages_names)
+  ids <- c(artists_with_pages_ids, rep(NA, length(all_names) - length(artists_with_pages_names)))
 
   purrr::map2(names, ids, ~ list(artist_name = .x, artist_id = .y))
 }
