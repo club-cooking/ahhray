@@ -9,8 +9,9 @@
 #' @examples
 #' \dontrun{
 #' ra_get_region_clubs(ai = 10)
+#' ra_get_region_clubs(ai = 13, include_closed = TRUE)
 #' }
-ra_get_region_clubs <- function(ai) {
+ra_get_region_clubs <- function(ai, include_closed = FALSE) {
   clubs <- polite_read_html(
     "https://www.residentadvisor.net/clubs.aspx",
     query = list(ai = ai)
@@ -20,17 +21,35 @@ ra_get_region_clubs <- function(ai) {
   club_names <- trimws(rvest::html_text(clubs))
   club_ids <- as.numeric(
     stringr::str_extract(rvest::html_attr(clubs, "href"), "([^=]+$)")
+  )
+  club_statuses <- rep("open", length(club_ids))
+
+  if (include_closed) {
+
+    closed_clubs <- polite_read_html(
+      "https://www.residentadvisor.net/clubs.aspx",
+      query = list(ai = ai, status = "closed")
+    ) %>%
+      rvest::html_nodes("#clubs a")
+
+    closed_club_names <- trimws(rvest::html_text(closed_clubs))
+    closed_club_ids <- as.numeric(
+      stringr::str_extract(rvest::html_attr(closed_clubs, "href"), "([^=]+$)")
     )
+    closed_club_statuses <- rep("closed", length(closed_club_ids))
+
+    club_names <- c(club_names, closed_club_names)
+    club_ids <- c(club_ids, closed_club_ids)
+    club_statuses <- c(club_statuses, closed_club_statuses)
+  }
 
   res <- list()
 
   res[["ai"]] <- ai
-  res[["clubs"]] <- lapply(seq_along(clubs), function(x) {
-    list(
-      club_name = club_names[x],
-      club_id = club_ids[x]
-    )
-  })
+  res[["clubs"]] <- purrr::pmap(
+    list(a = club_names, b = club_ids, c = club_statuses),
+    function(a, b, c, d) list(club_name = a, club_id = b, club_status = c)
+  )
 
   res
 }
