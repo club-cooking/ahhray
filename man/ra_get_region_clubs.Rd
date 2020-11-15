@@ -4,7 +4,7 @@
 \alias{ra_get_region_clubs}
 \title{Get clubs listed on RA for a region}
 \usage{
-ra_get_region_clubs(ai)
+ra_get_region_clubs(ai, include_closed = FALSE)
 }
 \arguments{
 \item{ai}{numeric; limit results to a specific region
@@ -18,6 +18,7 @@ Get clubs listed on RA for a region
 }
 \examples{
 \dontrun{
-ra_get_region_clubs(ai = 10)
+ra_get_region_clubs(ai = 13)
+ra_get_region_clubs(ai = 13, include_closed = TRUE)
 }
 }

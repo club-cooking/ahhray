@@ -7,10 +7,10 @@
 ra_get_regions()
 }
 \value{
-character vector
+list
 }
 \description{
-Get event regions
+Get the countries and associated regions with event listings.
 }
 \examples{
 \dontrun{

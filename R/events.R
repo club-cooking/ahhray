@@ -1,3 +1,39 @@
+#' Get event regions
+#'
+#' Get the countries and associated regions with event listings.
+#'
+#' @return list
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' ra_get_regions()
+#' }
+ra_get_regions <- function() {
+
+  page <- polite_read_html("https://www.residentadvisor.net/events?show=all")
+
+  regions <- rvest::html_nodes(page, ".col2.fl.mb32")
+
+  country_names <- rvest::html_text(rvest::html_nodes(regions, "div.mr8 > h1"))
+
+  region_lists <- rvest::html_nodes(regions, "div.mr8 > ul")
+
+  region_attrs <- lapply(region_lists, function(x) {
+
+    regions <- rvest::html_nodes(x, "li > a")
+
+    region_name = rvest::html_attr(regions, "title")
+    region_code = stringr::str_remove(rvest::html_attr(regions, "href"), "/events/")
+
+    purrr::map2(region_name, region_code, ~ list(region_name = .x, region_code = .y))
+
+  })
+
+  purrr::map2(country_names, region_attrs, ~ list(country = .x, regions = .y))
+
+}
+
 # get lineup details
 get_event_lineup <- function(page) {
   lineup_element <- rvest::html_nodes(page, "p.lineup.large > a")
@@ -63,27 +99,6 @@ get_event_promoter <- function(page) {
   ))
 
   purrr::map2(names, ids, ~ list(promoter_name = .x, promoter_id = .y))
-}
-
-#' Get event regions
-#'
-#' @return character vector
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' ra_get_regions()
-#' }
-ra_get_regions <- function() {
-
-  page <- polite_read_html("https://www.residentadvisor.net/events?show=all")
-
-  regions <- rvest::html_nodes(page, ".mr8 li a")
-
-  region_codes <- stringr::str_remove(rvest::html_attr(regions, "href"), "/events/")
-  region_names <- rvest::html_attr(regions, "title")
-
-  purrr::map2(region_names, region_codes, ~ list(region_name = .x, region_code = .y))
 }
 
 #' Get information about an event
@@ -203,11 +218,6 @@ ra_get_club_events <- function(club_id) {
         rvest::html_nodes(".date") %>%
         rvest::html_text() %>%
         anytime::anydate()
-
-      # event_attendances <- event_articles %>%
-      #   rvest::html_nodes("p.counter > span") %>%
-      #   rvest::html_text() %>%
-      #   as.numeric()
 
       events[["club_id"]] <- club_id
 

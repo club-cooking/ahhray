@@ -30,7 +30,7 @@ ra_get_club <- function(club_id){
     rvest::html_text()
 
   club_info[["club_capacity"]] <- club_page %>%
-    rvest::html_nodes("#detail ul:nth-child(1) > li:nth-child(2)") %>%
+    rvest::html_nodes("#detail ul > li:nth-child(2)") %>%
     rvest::html_text() %>%
     stringr::str_remove("Capacity /") %>%
     as.numeric()

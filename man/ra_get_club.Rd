@@ -18,5 +18,6 @@ Get information about a club
 \examples{
 \dontrun{
 ra_get_club(club_id = 106730)
+ra_get_club(club_id = 175569)
 }
 }
