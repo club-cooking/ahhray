@@ -15,17 +15,11 @@ knitr::opts_chunk$set(
 
 # ahhray
 
-...
+A [Resident Advisor](https://www.residentadvisor.net/) scraper, written in R.
 
 ## Installation
 
-You can install the released version of ahhray from [CRAN](https://CRAN.R-project.org) with:
-
-``` r
-install.packages("ahhray")
-```
-
-And the development version from [GitHub](https://github.com/) with:
+You can install the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
@@ -45,7 +39,7 @@ Get information about a particular event:
 ra_get_event(event_id = 1422257)
 ```
 
-Get listed event regions:
+Get listed event regions (and associated countries):
 
 ```{r}
 regions <- ra_get_regions()
@@ -58,13 +52,13 @@ Get events that took place in a region, within a particular month:
 ```{r}
 morocco_events <- ra_get_region_events(region_code = "morocco", start_date = "2020-01-01")
 
-head(morocco_events)
+head(morocco_events$events)
 ```
 
 Get all events that took place in a specific club:
 
 ```{r}
-corsica_events <- ra_get_club_events(club_id = 2587)
+west_india_centre_events <- ra_get_club_events(club_id = 16687)
 
-head(corsica_events$`2020`)
+head(west_india_centre_events$events)
 ```

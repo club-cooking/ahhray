@@ -1,13 +1,13 @@
 Package: ahhray
-Title: What the Package Does (One Line, Title Case)
+Title: Get Data from Resident Advisor
 Version: 0.0.0.9000
-Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+Authors@R: c(
+    person("Ewen", "Henderson", email = "ewenhenderson@gmail.com", role = c("aut", "cre"),
+    comment = c(ORCID = "0000-0002-4748-4693")),
+    person("Alex", "Baiden", email = "alexbaiden@icloud.com", role = c("aut", "cre")
+    )
+Description: A web scraper for getting data from Resident Advisor 
+    <https://www.residentadvisor.net/>
 License: `use_mit_license()`, `use_gpl3_license()` or friends to
     pick a license
 Encoding: UTF-8

@@ -3,18 +3,13 @@
 
 # ahhray
 
-…
+A [Resident Advisor](https://www.residentadvisor.net/) scraper, written
+in R.
 
 ## Installation
 
-You can install the released version of ahhray from
-[CRAN](https://CRAN.R-project.org) with:
-
-``` r
-install.packages("ahhray")
-```
-
-And the development version from [GitHub](https://github.com/) with:
+You can install the development version from
+[GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
@@ -61,64 +56,120 @@ ra_get_event(event_id = 1422257)
 #> $promoters
 #> $promoters[[1]]
 #> $promoters[[1]]$promoter_name
-#> [1] "The Brixton Courtyard"
+#> [1] "JNA Events"
 #> 
 #> $promoters[[1]]$promoter_id
+#> [1] 83061
+#> 
+#> 
+#> $promoters[[2]]
+#> $promoters[[2]]$promoter_name
+#> [1] "The Brixton Courtyard"
+#> 
+#> $promoters[[2]]$promoter_id
 #> [1] 98479
 ```
 
-Get listed event regions:
+Get listed event regions (and associated countries):
 
 ``` r
 regions <- ra_get_regions()
 
 head(regions)
 #> [[1]]
-#> [[1]]$region_name
+#> [[1]]$country
+#> [1] "Albania"
+#> 
+#> [[1]]$regions
+#> [[1]]$regions[[1]]
+#> [[1]]$regions[[1]]$region_name
 #> [1] "All, Albania"
 #> 
-#> [[1]]$region_code
+#> [[1]]$regions[[1]]$region_code
 #> [1] "albania"
 #> 
 #> 
+#> 
+#> 
 #> [[2]]
-#> [[2]]$region_name
+#> [[2]]$country
+#> [1] "Algeria"
+#> 
+#> [[2]]$regions
+#> [[2]]$regions[[1]]
+#> [[2]]$regions[[1]]$region_name
 #> [1] "All, Algeria"
 #> 
-#> [[2]]$region_code
+#> [[2]]$regions[[1]]$region_code
 #> [1] "algeria"
 #> 
 #> 
+#> 
+#> 
 #> [[3]]
-#> [[3]]$region_name
+#> [[3]]$country
+#> [1] "Andorra"
+#> 
+#> [[3]]$regions
+#> [[3]]$regions[[1]]
+#> [[3]]$regions[[1]]$region_name
 #> [1] "All, Andorra"
 #> 
-#> [[3]]$region_code
+#> [[3]]$regions[[1]]$region_code
 #> [1] "andorra"
 #> 
 #> 
+#> 
+#> 
 #> [[4]]
-#> [[4]]$region_name
+#> [[4]]$country
+#> [1] "Angola"
+#> 
+#> [[4]]$regions
+#> [[4]]$regions[[1]]
+#> [[4]]$regions[[1]]$region_name
 #> [1] "All, Angola"
 #> 
-#> [[4]]$region_code
+#> [[4]]$regions[[1]]$region_code
 #> [1] "angola"
 #> 
 #> 
+#> 
+#> 
 #> [[5]]
-#> [[5]]$region_name
+#> [[5]]$country
+#> [1] "Antigua and Barbuda"
+#> 
+#> [[5]]$regions
+#> [[5]]$regions[[1]]
+#> [[5]]$regions[[1]]$region_name
 #> [1] "All, Antigua and Barbuda"
 #> 
-#> [[5]]$region_code
+#> [[5]]$regions[[1]]$region_code
 #> [1] "antiguaandbarbuda"
 #> 
 #> 
+#> 
+#> 
 #> [[6]]
-#> [[6]]$region_name
+#> [[6]]$country
+#> [1] "Argentina"
+#> 
+#> [[6]]$regions
+#> [[6]]$regions[[1]]
+#> [[6]]$regions[[1]]$region_name
 #> [1] "All, Argentina"
 #> 
-#> [[6]]$region_code
+#> [[6]]$regions[[1]]$region_code
 #> [1] "argentina"
+#> 
+#> 
+#> [[6]]$regions[[2]]
+#> [[6]]$regions[[2]]$region_name
+#> [1] "Buenos Aires, Argentina"
+#> 
+#> [[6]]$regions[[2]]$region_code
+#> [1] "ar/buenosaires"
 ```
 
 Get events that took place in a region, within a particular month:
@@ -126,7 +177,7 @@ Get events that took place in a region, within a particular month:
 ``` r
 morocco_events <- ra_get_region_events(region_code = "morocco", start_date = "2020-01-01")
 
-head(morocco_events)
+head(morocco_events$events)
 #> [[1]]
 #> [[1]]$event_id
 #> [1] 1364274
@@ -335,71 +386,71 @@ head(morocco_events)
 Get all events that took place in a specific club:
 
 ``` r
-corsica_events <- ra_get_club_events(club_id = 2587)
+west_india_centre_events <- ra_get_club_events(club_id = 16687)
 
-head(corsica_events$`2020`)
+head(west_india_centre_events$events)
 #> [[1]]
 #> [[1]]$event_id
-#> [1] 1387109
+#> [1] 1381037
 #> 
 #> [[1]]$event_name
-#> [1] "[RESCHEDULED] Unreal presents: Real Lies (Live)"
+#> [1] "S.P.Y Dubplate Style with Guests TBA"
 #> 
 #> [[1]]$event_date
-#> [1] "2020-12-03"
+#> [1] "2020-05-01"
 #> 
 #> 
 #> [[2]]
 #> [[2]]$event_id
-#> [1] 1387194
+#> [1] 1339329
 #> 
 #> [[2]]$event_name
-#> [1] "[RESCHEDULED] Trance Party 8"
+#> [1] "#Fckboris - Register N Rave"
 #> 
 #> [[2]]$event_date
-#> [1] "2020-09-26"
+#> [1] "2019-11-16"
 #> 
 #> 
 #> [[3]]
 #> [[3]]$event_id
-#> [1] 1406639
+#> [1] 1328515
 #> 
 #> [[3]]$event_name
-#> [1] "Stained: Very Special Guests"
+#> [1] "SUBDUB - Iration Steppas, King Alpha, Oneness Sound System Paradox, Dj Storm & Kid Drama"
 #> 
 #> [[3]]$event_date
-#> [1] "2020-08-22"
+#> [1] "2019-10-19"
 #> 
 #> 
 #> [[4]]
 #> [[4]]$event_id
-#> [1] 1403112
+#> [1] 1283977
 #> 
 #> [[4]]$event_name
-#> [1] "China White: Special Guests (All Night Long)"
+#> [1] "SUBDUB - 21st Birthday Part 2 / Deep Medi"
 #> 
 #> [[4]]$event_date
-#> [1] "2020-08-07"
+#> [1] "2019-09-28"
 #> 
 #> 
 #> [[5]]
 #> [[5]]$event_id
-#> [1] 1405893
+#> [1] 1214355
 #> 
 #> [[5]]$event_name
-#> [1] "China White: Special Guests"
+#> [1] "SUBDUB - Iration Steppas, Youngsta, Om Unit"
 #> 
 #> [[5]]$event_date
-#> [1] "2020-07-10"
+#> [1] "2019-02-08"
 #> 
 #> 
 #> [[6]]
 #> [[6]]$event_id
-#> [1] 1393339
+#> [1] 1164951
 #> 
 #> [[6]]$event_name
-#> [1] "China White: Very Special Guests"
+#> [1] "Subdub - Leeds West Indian Centre"
 #> 
 #> [[6]]$event_date
-#> [1] "2020-05-30"
+#> [1] "2018-10-06"
 ```

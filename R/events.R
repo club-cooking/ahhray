@@ -185,23 +185,25 @@ ra_get_region_events <- function(region_code, start_date,
 #' @examples
 #' \dontrun{
 #' ra_get_club_events(club_id = 2587)
+#' ra_get_club_events(club_id = 16687)
 #' }
 ra_get_club_events <- function(club_id) {
 
-  year <- as.numeric(format(Sys.Date(), "%Y"))
+  club_home <- polite_read_html(
+    "https://www.residentadvisor.net/club.aspx",
+    query = list(id = club_id, show = "events")
+  )
 
-  events <- list()
+  # check if year selector is used
+  year_selector <- rvest::html_nodes(club_home, "#Form1 .arrow-down")
 
-  while(year > 0) {
+  if (length(year_selector) == 0) {
 
-    club_page <- polite_read_html(
-      "https://www.residentadvisor.net/club.aspx",
-      query = list(id = club_id, show = "events", yr = year)
-    )
-
-    event_articles <- rvest::html_nodes(club_page, "article")
+    event_articles <- rvest::html_nodes(club_home, "article")
 
     if (length(event_articles) > 0) {
+
+      events <- list()
 
       event_ids <- event_articles %>%
         rvest::html_nodes("a") %>%
@@ -224,11 +226,58 @@ ra_get_club_events <- function(club_id) {
       events[["events"]] <- c(events[["events"]], purrr::pmap(
         list(a = event_ids, b = event_names, c = event_dates),
         function(a, b, c, d) list(event_id = a, event_name = b, event_date = c)
+      ))
+
+      return(events)
+
+    } else {
+      return(NULL)
+    }
+
+  } else {
+
+    year <- as.numeric(format(Sys.Date(), "%Y"))
+
+    events <- list()
+
+    while(year > 0) {
+
+      club_page <- polite_read_html(
+        "https://www.residentadvisor.net/club.aspx",
+        query = list(id = club_id, show = "events", yr = year)
+      )
+
+      event_articles <- rvest::html_nodes(club_page, "article")
+
+      if (length(event_articles) > 0) {
+
+        event_ids <- event_articles %>%
+          rvest::html_nodes("a") %>%
+          rvest::html_attr("href") %>%
+          stringr::str_extract("([^/]+$)") %>%
+          unique() %>%
+          as.numeric()
+
+        event_names <- event_articles %>%
+          rvest::html_nodes("a h1") %>%
+          rvest::html_text()
+
+        event_dates <- event_articles %>%
+          rvest::html_nodes(".date") %>%
+          rvest::html_text() %>%
+          anytime::anydate()
+
+        events[["club_id"]] <- club_id
+
+        events[["events"]] <- c(events[["events"]], purrr::pmap(
+          list(a = event_ids, b = event_names, c = event_dates),
+          function(a, b, c, d) list(event_id = a, event_name = b, event_date = c)
         ))
 
-      year <- year - 1
-    } else {
-      break
+        year <- year - 1
+      } else {
+        break
+      }
     }
   }
   events
