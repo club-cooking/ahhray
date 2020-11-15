@@ -3,6 +3,14 @@
 
 # ahhray
 
+<!-- badges: start -->
+
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![R build
+status](https://github.com/club-cooking/ahhray/workflows/R-CMD-check/badge.svg)](https://github.com/club-cooking/ahhray/actions)
+<!-- badges: end -->
+
 A [Resident Advisor](https://www.residentadvisor.net/) scraper, written
 in R.
 
