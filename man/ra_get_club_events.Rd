@@ -18,5 +18,6 @@ Get events for a club
 \examples{
 \dontrun{
 ra_get_club_events(club_id = 2587)
+ra_get_club_events(club_id = 16687)
 }
 }

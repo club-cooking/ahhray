@@ -4,12 +4,11 @@ Version: 0.0.0.9000
 Authors@R: c(
     person("Ewen", "Henderson", email = "ewenhenderson@gmail.com", role = c("aut", "cre"),
     comment = c(ORCID = "0000-0002-4748-4693")),
-    person("Alex", "Baiden", email = "alexbaiden@icloud.com", role = c("aut", "cre")
+    person("Alex", "Baiden", email = "alexbaiden@icloud.com", role = c("aut"))
     )
-Description: A web scraper for getting data from Resident Advisor 
-    <https://www.residentadvisor.net/>
-License: `use_mit_license()`, `use_gpl3_license()` or friends to
-    pick a license
+Description: A web scraper for getting data from Resident Advisor
+    <https://www.residentadvisor.net/>.
+License: MIT + file LICENSE 
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)

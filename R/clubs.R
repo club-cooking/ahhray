@@ -64,6 +64,8 @@ get_club_attrs <- function(x, status = c("open", "closed")) {
 #'
 #' @param ai numeric; limit results to a specific region
 #' (taken from region's URL e.g. 1 for Sydney)
+#' @param include_closed logical; include clubs that are
+#' now closed in the results?
 #'
 #' @return a list
 #' @export

@@ -9,6 +9,9 @@ ra_get_region_clubs(ai, include_closed = FALSE)
 \arguments{
 \item{ai}{numeric; limit results to a specific region
 (taken from region's URL e.g. 1 for Sydney)}
+
+\item{include_closed}{logical; include clubs that are
+now closed in the results?}
 }
 \value{
 a list
