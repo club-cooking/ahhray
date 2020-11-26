@@ -36,7 +36,7 @@ ra_get_regions <- function() {
 
 # get lineup details
 get_event_lineup <- function(page) {
-  lineup_element <- rvest::html_nodes(page, "p.lineup.large > a")
+  lineup_element <- rvest::html_nodes(page, "p.lineup > a")
 
   names <- rvest::html_text(lineup_element)
   ids <- stringr::str_extract(
@@ -57,7 +57,7 @@ get_event_name <- function(page) {
 # get date of a event
 get_event_date <- function(page) {
   date_element <- rvest::html_nodes(
-    page, "#detail > ul:nth-child(1) > li:nth-child(1) > a"
+    page, "#detail > ul > li:contains(Date) > a.cat-rev"
   )
 
   anytime::anydate(rvest::html_text(date_element))
@@ -66,7 +66,7 @@ get_event_date <- function(page) {
 # get venue name of a event
 get_event_venue_name <- function(page) {
   venue_element <- rvest::html_nodes(
-    page, "#detail > ul:nth-child(1) > li:nth-child(2) > a.cat-rev"
+    page, "#detail > ul > li:contains(Venue) > a.cat-rev"
   )
 
   rvest::html_text(venue_element)
@@ -75,7 +75,7 @@ get_event_venue_name <- function(page) {
 # get venue link of a event
 get_event_venue_id <- function(page) {
   venue_element <- rvest::html_nodes(
-    page, "#detail > ul:nth-child(1) > li:nth-child(2) > a.cat-rev"
+    page, "#detail > ul > li:contains(Venue) > a.cat-rev"
   )
 
   as.numeric(
@@ -89,7 +89,7 @@ get_event_venue_id <- function(page) {
 # get promoter of a event
 get_event_promoter <- function(page) {
   promoter_element <- rvest::html_nodes(
-    page, "#detail > ul:nth-child(1) > li:nth-child(4) > a"
+    page, "#detail > ul > li:contains(Promoter) > div + a"
   )
 
   names <- rvest::html_text(promoter_element)
@@ -111,6 +111,7 @@ get_event_promoter <- function(page) {
 #' @examples
 #' ra_get_event(event_id = 1422257)
 #' ra_get_event(event_id = 1421207)
+#' ra_get_event(event_id = 523058)
 ra_get_event <- function(event_id) {
   url <- file.path(
     "https://www.residentadvisor.net", "events", event_id
